@@ -62,7 +62,7 @@ class Starter {
         
         //--- Include autoloader:
         if (!self::$autoloader) {
-            if ($config['autoLoader']) { 
+            if ($config['autoLoader'] ?? null) {
                 //--- Register autoloader defined by config:
                 $autoLoader = $config['autoLoader'];
             } else { 
@@ -88,12 +88,12 @@ class Starter {
         }
         
         //--- Set page title:
-        if (!$config['title']) {
+        if (!($config['title'] ?? null)) {
             $config['title'] = $config['appInfo']['title'];
         }
         
         //-- Set page subtitle:
-        if ($config['assets']['title']) {
+        if ($config['assets']['title'] ?? null) {
             if ($config['title']) { $config['title'] .= self::$subTitleSeparator; }
             $config['title'] .= $config['assets']['title'];
         }
@@ -114,7 +114,7 @@ class Starter {
         //--- Create current uriRootBack:
         self::$uriRootBack = "";
         $webDir  = dirname($_SERVER['SCRIPT_NAME']);
-        $uriPath = $_SERVER['REDIRECT_URL'];
+        $uriPath = $_SERVER['REDIRECT_URL'] ?? '';
         $path    = ltrim(preg_replace('/^' . preg_quote($webDir, '/') . '/', '', $uriPath), "/\\");
         $path    = str_replace("\\", '/', $path);
         if (preg_match('/\/$/', $path)) {
@@ -222,7 +222,7 @@ class Starter {
         $config = self::getConfig($config, true);
         
         //--- Very simple router:
-        $route = $_REQUEST[self::$routerKey];
+        $route = $_REQUEST[self::$routerKey] ?? null;
         if (!$route) { $route = $config['defaultRoute']; }
         //--- get controller name and action:
         if (preg_match('/(.*)\/([^\/]+)$/', $route, $m)) {
@@ -230,6 +230,7 @@ class Starter {
             $action     = $m[2];
         } else {
             $controller = trim($route, "\/");
+            $action     = null;
         }
         
         //--- Set application language:
@@ -246,7 +247,8 @@ class Starter {
         Messages::$textDomains = $config['textDomains'];
         //--- Use the first text domain by default:
         if (is_array(Messages::$textDomains)) {
-            Messages::useTextDomain(array_shift(array_keys(Messages::$textDomains)));
+            $keys = array_keys(Messages::$textDomains);
+            Messages::useTextDomain(array_shift($keys));
         }
         //-----------------------
         
@@ -268,7 +270,7 @@ class Starter {
             if (!$layout)        { $layout = $config['layout']; }
             
             //--- Set an action:
-            $defaultAction = $controllerClass->defaultAction;
+            $defaultAction = $controllerClass->defaultAction ?? null;
             if (!$defaultAction) { $defaultAction = 'index'; }
             if (!$action)        { $action = $defaultAction; }
             $actionMethod = 'action' . ucwords($action);
@@ -287,7 +289,7 @@ class Starter {
             //--- View file:
             $controllerName = strtolower(preg_replace('/Controller$/i','', $controllerClassName));
             $viewFile   = $config['viewPath'] . '/' . $controllerName . '/' . $view . '.php';
-            //echo "$layout : $action : $view || $layoutFile : $viewFile";
+            // echo "$layout : $action : $view || $layoutFile : $viewFile";
             
             //--- Include Layout:
             // extract config varibles:

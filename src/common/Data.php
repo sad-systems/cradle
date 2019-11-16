@@ -163,7 +163,7 @@ class Data {
             if ($strict && !array_key_exists($key, $destination) && !is_numeric($key)) { continue; }
             
             //--- 1) Merge destination (String) value and source (String | Array) value:
-            if (!is_array($destination[$key])) {
+            if (!is_array($destination[$key] ?? null)) {
                 if (!is_array($value)) { 
                 //--- 1.1) Merge destination (String) and source (String):
                     if ($value === null) { continue; }  //<--- do not merge with NULL 
@@ -174,7 +174,7 @@ class Data {
                     }
                 } else {
                 //--- 1.2) Merge destination (String) and source (Array):
-                    if ($destination[$key] === null) {
+                    if ($destination[$key] ?? null === null) {
                         $destination[$key] = $value; //<--- do not merge with NULL
                     } else { 
                         $destination[$key] = [ $destination[$key] ];

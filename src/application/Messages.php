@@ -121,7 +121,7 @@ class Messages {
     public static function useTextDomain($domain) {
         if (isset(self::$textDomains[$domain])) {
             extract(self::$textDomains[$domain]);
-            self::setTextDomain($domain, $root, $codeset);
+            self::setTextDomain($domain, $root);
         }
     }
     
@@ -156,7 +156,7 @@ class Messages {
      * ~~~
      */
     public static function _($text){  
-        if (!self::$textDomains[self::$textDomain]["data"]) {
+        if (!(self::$textDomains[self::$textDomain]["data"] ?? null)) {
             $file = self::$textDomains[self::$textDomain]["root"] . "/" . substr(self::$language, 0, 2) . "/". self::$textDomain . ".php";
             if (is_file($file)) {
                 self::$textDomains[self::$textDomain]["data"] = include($file); 

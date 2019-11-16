@@ -137,9 +137,9 @@ class Language {
         $lang_list = explode(",", strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']));
         $languages = [];
         foreach ($lang_list as $lang_string) {
-            list($lang, $q) = explode(";q=", $lang_string);
-            if ($q === null) { $q = 1; }
-            $languages[$lang] = $q;
+            $p = explode(";q=", $lang_string);
+            $lang = $p[0] ?? null;
+            $languages[$lang] = $p[1] ?? 1;
         }
         arsort($languages, SORT_NUMERIC);
     return $languages;    
@@ -151,7 +151,8 @@ class Language {
      * @return <i>string</i> 2-symbols code of user's most accepted language
      */
     public static function getUserAcceptLanguage() {
-        $lang = array_shift(array_keys(self::getUserAcceptLanguages()));
+        $keys = array_keys(self::getUserAcceptLanguages());
+        $lang = array_shift($keys);
     return $lang; //substr($lang, 0, 2);
     }
     
@@ -177,7 +178,7 @@ class Language {
         //--- Return the stored language:
         if (!self::$language) {
             //--- If is set $_COOKIE's languge: 
-            if ($_COOKIE[self::$cookieLanguageKey]) {
+            if ($_COOKIE[self::$cookieLanguageKey] ?? null) {
                 self::setLanguage($_COOKIE[self::$cookieLanguageKey]);
             } else {
             //--- Define language accepted by user's browser:
